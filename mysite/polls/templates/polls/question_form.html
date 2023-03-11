@@ -16,16 +16,16 @@
         {% csrf_token %}
         <p>
         {% if form.errors %}
-         }
-                {{ form.errors }}
+        
+            {{ form.errors }}
         
         {% endif %}
         </p>
-        <!-- {{ form.as_p}} -->
+        {% comment %} {{ form.as_p}} {% endcomment %}
         {{ form.question_text.label_tag }}{{ form.question_text }}
         <br/>
         {{form.pub_date.label_tag}}{{ form.pub_date }}
-       
+        
     <input type="submit" value="send"/>
     </form>
     {% endblock %}

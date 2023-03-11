@@ -12,12 +12,14 @@ def validateCleanLang(value):
     return value
 
 class QuestionForm(forms.ModelForm):
-    question_text = forms.CharField(label='Question Text', max_length=200, validators=[validateCleanLang])
-    # pub_date = forms.DateTimeField(label='Date Published', input_formats=['%Y-%m-%d %h:%m:%s'])
-
+    
     class Meta:
         model = Question
         fields = '__all__'
+        labels = {
+            'question_text': 'enter question text',
+            'pub_date': 'enter publication date'
+        }
 
     def clean(self):
         CURSES = ('dumbass', 'moron')

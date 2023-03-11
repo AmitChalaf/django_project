@@ -11,11 +11,18 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModel
 @csrf_exempt
 def question_list_api(request):
     if request.method == "POST":
-        pass
+        data = JSONParser().parse(request)
+        serializer = QuestionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return HttpResponse(status.HTTP_400_BAD_REQUEST)
     elif request.method == "GET":
         questions = Question.objects.all()
         serializer = QuestionSerializer(questions, many=True)
         return JsonResponse(serializer.data, safe=False)
+    
     
 
 @csrf_exempt
@@ -39,28 +46,48 @@ def question_api(request, pk):
 #     queryset = Choice.objects.all()
 #     serializer_class = ChoiceSerializers
 
-class ChoiceListApi(CreateModelMixin, ListModelMixin, generics.GenericAPIView):
-    queryset = Choice.objects.all()
-    serializer_class = ChoiceSerializers
+# class ChoiceListApi(CreateModelMixin, ListModelMixin, generics.GenericAPIView):
+#     queryset = Choice.objects.all()
+#     serializer_class = ChoiceSerializers
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
     
-    def post(self,request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+#     def post(self,request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
 
 
-# class ChoiceListApi(APIView):
-#     def post(self, request):
-#         data = JSONParser().parse(request)
-#         serializer = ChoiceSerializers(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-#         else:
-#             return HttpResponse(status.HTTP_400_BAD_REQUEST)
+class ChoiceListApi(APIView):
+    def post(self, request):
+        data = JSONParser().parse(request)
+        serializer = ChoiceSerializers(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return HttpResponse(status.HTTP_400_BAD_REQUEST)
     
-#     def get(self, request):
-#         choices = Choice.objects.all()
-#         serializer = ChoiceSerializers(choices, many=True)
-#         return JsonResponse(serializer.data, safe=False)
+    def get(self, request):
+        choices = Choice.objects.all()
+        serializer = ChoiceSerializers(choices, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    
+@csrf_exempt
+def choice_api(request, pk):
+    choice = Choice.objects.get(id=pk)
+    
+    if request.method == 'GET':
+        serializer = ChoiceSerializers(choice)
+        return JsonResponse(serializer.data)
+
+    if request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = ChoiceSerializers(choice, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status = status.HTTP_201_CREATED)
+        else:
+            return JsonResponse(status = status.HTTP_406_NOT_ACCEPTABLE)
+
+    if request.method == 'DELETE':
+        pass
